@@ -25,4 +25,9 @@ module.exports = {
       notFound: "ตรวจสอบไม่พบ !!",
     },
   },
+
+  remoteDatabase: {
+    newHolder: "/holder/new",
+    updateHolder: "/holder/update/",
+  },
 };
