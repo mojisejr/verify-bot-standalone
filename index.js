@@ -8,7 +8,7 @@ const express = require("express");
 const chalk = require("chalk");
 const http = require("http");
 const sequelize = require("./database/sqlite/sqlite.database");
-const PORT = process.env.PORT || 1234;
+const PORT = process.env.PORT || 3002;
 
 //==== express
 const app = express();
@@ -32,5 +32,5 @@ const server = http.createServer(app);
 
 sequelize.sync().then(() => console.log(chalk.bgGreenBright("SQLITE: ONLINE")));
 server.listen(PORT, () => {
-  console.log(chalk.bgGreenBright("Market Tracker: ONLINE"));
+  console.log(chalk.bgGreenBright("Market Tracker: ONLINE on port - ", PORT));
 });

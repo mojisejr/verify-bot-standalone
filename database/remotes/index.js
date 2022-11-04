@@ -6,30 +6,37 @@ async function remoteAddVerifiedHolder({
   nftAddress,
   discordId,
   walletAddress,
+  balance,
   verified,
 }) {
   const response = await axios.post(
-    `${process.env.remote_database}/${remoteDatabase.newHolder}`,
+    `${process.env.remote_database}${remoteDatabase.newHolder}`,
     {
       nftAddress,
       discordId,
       walletAddress,
+      balance,
       timestamp: new Date().getTime(),
       verified,
     }
   );
 
-  console.log(response.data);
-  return response.data;
+  return response.data.data;
 }
 
-async function remoteUpdateVerifiedHolder({ nftAddress, discordId, verified }) {
+async function remoteUpdateVerifiedHolder({
+  walletAddress,
+  discordId,
+  balance,
+  verified,
+}) {
   const response = await axios.put(
-    `${process.env.remote_database}/${remoteDatabase.updateHolder}/${nftAddress}/${discordId}`,
+    `${process.env.remote_database}/holder/${process.env.nft}/${discordId}`,
     {
-      nftAddress,
+      nftAddress: process.env.nft,
       discordId,
       walletAddress,
+      balance,
       timestamp: new Date().getTime(),
       verified,
     }
@@ -46,8 +53,10 @@ async function remoteGetVerifiedHolders(nftAddress) {
 
 async function remoteGetHolders(nftAddress) {
   const response = await axios.get(
-    `${process.env.remote_database}/${nftAddress}`
+    `${process.env.remote_database}/holder/${nftAddress}`
   );
+
+  console.log(response.data.data);
 
   return response.data;
 }

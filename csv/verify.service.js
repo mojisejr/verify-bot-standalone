@@ -5,6 +5,8 @@ const {
   getPunkByWallet,
 } = require("../database/verify.service");
 
+const { remoteAddVerifiedHolder } = require("../database/remotes");
+
 async function getDataByWallet(wallet) {
   const result = await getPunkByWallet(wallet);
   return result;
@@ -42,10 +44,16 @@ async function saveVerifiedData({
     lastbalance,
     timestamp,
     verified,
-  }).then(() => {
-    console.log(`@${wallet} passed and saved to database`);
+  }).then(async () => {
+    console.log(`@${wallet} passed and saved to database also remote database`);
+    await remoteAddVerifiedHolder({
+      nftAddress: process.env.nft,
+      discordId,
+      walletAddress: wallet,
+      balance,
+      verified: true,
+    });
   });
-
   return true;
 }
 
