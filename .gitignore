@@ -130,3 +130,4 @@ dist
 .pnp.*
 
 swagger_dev.json
+db.sqlite

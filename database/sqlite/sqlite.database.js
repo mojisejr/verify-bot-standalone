@@ -1,9 +1,10 @@
 const { Sequelize } = require("sequelize");
-const basePath = process.cwd();
+const path = require("path");
+// const basePath = process.cwd();
 
 const sequelize = new Sequelize("game-state-db", "user", "pass", {
   dialect: "sqlite",
-  host: `${basePath}/database/sqlite/db.sqlite`,
+  host: `${path.resolve(__dirname, "db.sqlite")}`,
   logging: false,
 });
 
