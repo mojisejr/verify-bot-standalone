@@ -1,5 +1,9 @@
 const { Client, Intents } = require("discord.js");
-const { checkVerifyHolder, reverifyHolder } = require("./discord.verify");
+const {
+  checkVerifyHolder,
+  reverifyHolder,
+  isValidAddress,
+} = require("./discord.verify");
 const { slashCommand } = require("../constants/config");
 const chalk = require("chalk");
 
@@ -17,7 +21,7 @@ const client = new Client({
 });
 
 client.once("ready", async () => {
-  console.log(chalk.bgGreenBright("WHOsHODL: ONLINE"));
+  console.log(chalk.bgGreenBright("DISCORD BOT: ONLINE"));
 });
 
 client.login(process.env.token);
@@ -29,6 +33,17 @@ client.on("interactionCreate", async (interaction) => {
       interaction.isCommand() &&
       interaction.commandName == slashCommand.reverify.name
     ) {
+      const validOld = isValidAddress(interaction.options.data[0].value);
+      const validNew = isValidAddress(interaction.options.data[1].value);
+      if (!validOld || !validNew) {
+        if (!interaction.deferred) {
+          await interaction.deferReply({ ephemeral: true });
+        }
+        await interaction.editReply({
+          content: "กระเป๋าสักใบมีเลข wallet ผิด ~ ลองอีกที",
+        });
+        return;
+      }
       const inputData = {
         oldWallet: interaction.options.data[0].value,
         newWallet: interaction.options.data[1].value,
@@ -56,11 +71,22 @@ client.on("interactionCreate", async (interaction) => {
 //verification
 client.on("interactionCreate", async (interaction) => {
   //format data
+
   try {
     if (
       interaction.isCommand() &&
       interaction.commandName == slashCommand.verify.name
     ) {
+      const validOld = isValidAddress(interaction.options.data[0].value);
+      if (!validOld) {
+        if (!interaction.deferred) {
+          await interaction.deferReply({ ephemeral: true });
+        }
+        await interaction.editReply({
+          content: "กระเป๋าสักใบมีเลข wallet ผิด ~ ลองอีกที",
+        });
+        return;
+      }
       const inputData = {
         wallet: interaction.options.data[0].value,
         discordId: interaction.user.id,

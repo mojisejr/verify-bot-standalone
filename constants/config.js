@@ -28,6 +28,6 @@ module.exports = {
 
   remoteDatabase: {
     newHolder: "/holder/new",
-    updateHolder: "/holder/update/",
+    updateHolder: "/holder/update",
   },
 };
