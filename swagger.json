@@ -139,7 +139,7 @@
       }
     }
   },
-  "host": "localhost:3002",
+  "host": "https://vast-blue-pig-tutu.cyclic.app",
   "basePath": "/v1",
   "tags": [
     {
