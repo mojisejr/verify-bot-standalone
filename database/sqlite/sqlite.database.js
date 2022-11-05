@@ -4,7 +4,7 @@ const path = require("path");
 
 const sequelize = new Sequelize("game-state-db", "user", "pass", {
   dialect: "sqlite",
-  host: `${path.resolve(__dirname, "db.sqlite")}`,
+  storage: path.resolve(__dirname, "db.sqlite"),
   logging: false,
 });
 
