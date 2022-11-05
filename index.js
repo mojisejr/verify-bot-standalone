@@ -67,5 +67,6 @@ sequelize
   .sync()
   .then(() => console.log(chalk.bgGreenBright("Database: ONLINE")));
 server.listen(PORT, () => {
+  console.log(__dirname);
   console.log(chalk.bgGreenBright("API: ONLINE on port - ", PORT));
 });
