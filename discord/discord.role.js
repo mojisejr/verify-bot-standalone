@@ -21,13 +21,14 @@ async function takeRole(client, userId) {
 }
 
 async function setZeroBalanceRole(client, userId) {
+  await takeRole(client, userId);
   const server = client.guilds.cache.get(process.env.guildId);
   const role = server.roles.cache.find(
     (role) => role.name === process.env.zero_balance_role
   );
   const member = await server.members.fetch();
   const user = member.get(userId);
-  await user.roles.remove(role);
+  await user.roles.add(role);
   console.log(
     `@${userId} has 0 balance may be sent to dig or sent to market set to ${role.name}`
   );

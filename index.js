@@ -1,7 +1,7 @@
 require("dotenv").config();
 require("./discord/discord.bot");
 require("./nft");
-// require("./megaland");
+require("./megaland");
 require("./freecity");
 
 const express = require("express");
@@ -21,6 +21,7 @@ const whitelist =
         "http://68.183.176.4:3001",
         "http://68.183.176.4:3002",
         "http://68.183.176.4:3000",
+        "https://vast-blue-pig-tutu.cyclic.app",
       ]
     : [
         "http://localhost:3000",
