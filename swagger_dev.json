@@ -1,0 +1,153 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Dig Dragon Bot APIV1",
+    "description": "Dig Dragon ON-BOT API",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "paths": {
+    "/holder": {
+      "get": {
+        "tags": ["Holders"],
+        "summary": "get all holders",
+        "products": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Holders"
+            }
+          }
+        }
+      }
+    },
+    "/holder/verify": {
+      "put": {
+        "parameters": [
+          {
+            "name": "wallet",
+            "in": "query",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "balance",
+            "in": "query",
+            "type": "integer",
+            "required": true
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "boolean",
+            "required": true
+          }
+        ],
+        "tags": ["Holders"],
+        "summary": "update holder verification state",
+        "products": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "schema": {
+              "$ref": "#/definitions/Holder"
+            }
+          }
+        }
+      }
+    },
+    "/holder/token": {
+      "get": {
+        "parameters": [
+          {
+            "name": "wallet",
+            "in": "query",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "tags": ["Tokens"],
+        "summary": "get all token of owner",
+        "products": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Tokens"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Holder": {
+      "properties": {
+        "id": {
+          "type": "string",
+          "uniqueItems": true,
+          "definition": "holder wallet"
+        },
+        "discordId": {
+          "type": "string",
+          "definition": "holder discord Id"
+        },
+        "discorName": {
+          "type": "string",
+          "definition": "holder discord name#tag"
+        },
+        "lastbalance": {
+          "type": "integer",
+          "definition": "holder latest balance"
+        },
+        "timestamp": {
+          "type": "string",
+          "definition": "verification timestamp"
+        },
+        "verified": {
+          "type": "boolean",
+          "definition": "verification status"
+        }
+      }
+    },
+    "Holders": {
+      "type": "array",
+      "$ref": "#/definitions/Holder"
+    },
+    "Tokens": {
+      "properties": {
+        "result": {
+          "type": "boolean",
+          "definition": "query result"
+        },
+        "message": {
+          "type": "string",
+          "definition": "message from result"
+        },
+        "functionCall": {
+          "type": "string",
+          "definition": "called function"
+        },
+        "data": {
+          "type": "array",
+          "definition": "data array"
+        }
+      }
+    }
+  },
+  "host": "localhost:3002",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "API",
+      "description": "Dig Dragon Bot API V1"
+    }
+  ],
+  "schemes": ["http"],
+  "consumes": ["application/json"],
+  "products": ["application/json"]
+}

@@ -20,12 +20,13 @@ async function newVerifiedHolder(holderData) {
 }
 
 async function updateVerificationState(id, lastbalance, verified) {
-  await Holder.update(
+  const result = await Holder.update(
     { lastbalance, verified },
     {
       where: { id },
     }
   );
+  return result > 0 ? true : false;
 }
 
 async function getAllVerifiedHolders() {
@@ -64,7 +65,8 @@ async function getHolderByWallet(wallet) {
 }
 
 async function deleteHolderData(wallet) {
-  await Holder.destroy({ where: { id: wallet } });
+  const deleted = await Holder.destroy({ where: { id: wallet } });
+  deleted <= 0 ? false : true;
 }
 
 //Helper

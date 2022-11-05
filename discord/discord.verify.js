@@ -6,7 +6,6 @@ const {
   saveVerifiedData,
   updateVerificationStatus,
 } = require("../csv/verify.service");
-const { remoteUpdateVerifiedHolder } = require("../database/remotes");
 const {
   reverifyCheck,
   deleteHolderData,
@@ -69,15 +68,16 @@ async function checkVerifyHolder(inputData, client, interaction) {
         `@${discordName} ${verification.messages.comeback}`
       );
       const balance = await getHolderBalance(wallet);
-      await updateVerificationStatus(wallet, balance, true).then(async () => {
-        console.log("done update local ... update to remote database");
-        await remoteUpdateVerifiedHolder({
-          walletAddress: wallet,
-          balance,
-          discordId,
-          verified: true,
-        });
-      });
+      await updateVerificationStatus(wallet, balance, true);
+      // .then(async () => {
+      //   console.log("done update local ... update to remote database");
+      //   await remoteUpdateVerifiedHolder({
+      //     walletAddress: wallet,
+      //     balance,
+      //     discordId,
+      //     verified: true,
+      //   });
+      // });
       await giveRole(client, discordId);
     }
   } else if (balance > 0 && verified) {
@@ -85,15 +85,16 @@ async function checkVerifyHolder(inputData, client, interaction) {
     await interaction.editReply(
       `@${discordName} ${verification.messages.already}`
     );
-    await updateVerificationStatus(wallet, balance, true).then(async () => {
-      console.log("done update local ... update to remote database");
-      await remoteUpdateVerifiedHolder({
-        walletAddress: wallet,
-        balance,
-        discordId,
-        verified: true,
-      });
-    });
+    await updateVerificationStatus(wallet, balance, true);
+    // .then(async () => {
+    //   console.log("done update local ... update to remote database");
+    //   await remoteUpdateVerifiedHolder({
+    //     walletAddress: wallet,
+    //     balance,
+    //     discordId,
+    //     verified: true,
+    //   });
+    // });
     await giveRole(client, discordId);
   } else {
     console.log(`@${wallet} has no punk!`);
@@ -185,6 +186,7 @@ async function isVerified(discordName) {
 module.exports = {
   checkVerifyHolder,
   reverifyHolder,
+  isValidAddress,
   getHolderBalance,
   sendBackMessage,
 };
