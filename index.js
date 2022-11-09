@@ -13,7 +13,7 @@ const sequelize = require("./database/sqlite/sqlite.database");
 const appError = require("./apis/utils/appError");
 const globleErrorController = require("./apis/controllers/error.controller");
 
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 4200;
 
 const whitelist =
   process.env.production == "PROD"
@@ -56,7 +56,7 @@ app.use(
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/v1", router);
 app.all("*", (req, res, next) => {
-  next(new appError(404, null, null, `[${req.originalUrl}] Not Found`));
+  next(new appError(`[${req.originalUrl}] Not Found`, 404, 'global'));
 });
 
 app.use(globleErrorController);

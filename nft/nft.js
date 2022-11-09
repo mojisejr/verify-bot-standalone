@@ -31,15 +31,10 @@ nft.on("Transfer", async (from, to, tokenId) => {
   console.log(
     chalk.bgGreenBright(`transfer from  = ${from} : ${to} tokenId: ${tokenId}`)
   );
-  if (isMarketPlace(to)) {
-    await onTransferUpdateRole(from);
-  } else if (isMarketPlace(from)) {
-    await onTransferUpdateRole(to);
-  } else {
-    await onTransferUpdateRole(to);
-    await onTransferUpdateRole(from);
-  }
+  onTransferToMarket(to,from);
+  onTransferToMine(to, from);
 });
+
 
 async function onTransferUpdateRole(wallet) {
   const holderData = await getDataByWallet(wallet);
@@ -50,11 +45,50 @@ async function onTransferUpdateRole(wallet) {
     await updateVerificationStatus(wallet, balance, true);
   } else if (balance <= 0 && holderData && holderData.wallet == wallet) {
     console.log(`@${wallet} : is has no balance`);
-    // await takeRole(client, holderData.discordId);
-    await setZeroBalanceRole(client, holderData.discordId);
+    await takeRole(client, holderData.discordId);
     await updateVerificationStatus(wallet, balance, false);
   } else {
     console.log(`transfer from non-verified holder. @${wallet}`);
+  }
+}
+
+async function onTransferUpdateMiningRole(wallet) {
+  const holderData = await getDataByWallet(wallet);
+  const balance = await getHolderBalance(wallet);
+  if (balance > 0 && holderData && holderData.wallet == wallet) {
+    console.log(`@${wallet} : is has balance with some to mining`);
+    await giveRole(client, holderData.discordId);
+    await setZeroBalanceRole(client, holderData.discordId);
+    await updateVerificationStatus(wallet, balance, true);
+  } else if (balance <= 0 && holderData && holderData.wallet == wallet) {
+    console.log(`@${wallet} : is has no balance with all to mining`);
+    await takeRole(client, holderData.discordId);
+    await setZeroBalanceRole(client, holderData.discordId);
+    await updateVerificationStatus(wallet, balance, false);
+  } else {
+    console.log(`transfer from non-verified holder. to mine @${wallet}`);
+  }
+}
+
+async function onTransferToMine(to, from) {
+  if (toMine(to)) {
+    await onTransferUpdateMiningRole(from);
+  } else if (toMine(from)) {
+    await onTransferUpdateMiningRole(to);
+  } else {
+    await onTransferUpdateMiningRole(to);
+    await onTransferUpdateMiningRole(from);
+  }
+}
+
+async function onTransferToMarket(to, from) {
+  if (isMarketPlace(to)) {
+    await onTransferUpdateRole(from);
+  } else if (isMarketPlace(from)) {
+    await onTransferUpdateRole(to);
+  } else {
+    await onTransferUpdateRole(to);
+    await onTransferUpdateRole(from);
   }
 }
 
@@ -69,7 +103,21 @@ function isMarketPlace(to) {
 
   const foundMarket = marketPlaceAddress.find((market) => market == to);
 
-  if (to === foundMarket || to === middleAddress) {
+  if (to === foundMarket || to === middleAddress) { 
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isMine(to) {
+  let mines = [
+    "0xD995B2cC01183268Ba124830E49963f3656f8e02"
+  ];
+
+  const foundMarket =mines.find((mine) => mine == to);
+
+  if (to === foundMarket) {
     return true;
   } else {
     return false;

@@ -139,7 +139,7 @@
       }
     }
   },
-  "host": "https://vast-blue-pig-tutu.cyclic.app",
+  "host": "157.245.152.83:4200",
   "basePath": "/v1",
   "tags": [
     {

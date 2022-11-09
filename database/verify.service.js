@@ -5,8 +5,10 @@ const {
   getHolderByDiscordId,
   getHolderByDiscordName,
   deleteHolderData,
-  getHolderByWallet,
+  // getHolderByWallet,
 } = require("../database/sqlite/services/sqlite.holder.service");
+const { getHolderByWallet } =require("../apis/services/holder.service");
+
 
 async function addVerifiedPunk(punkData) {
   const response = await newVerifiedHolder(punkData);
@@ -42,7 +44,7 @@ async function reverifyCheck(discordId, oldWallet) {
     };
   } else {
     const discordOK = found.discordId == discordId;
-    const walletOK = found.wallet == oldWallet;
+    const walletOK = found.walletAddress == oldWallet;
     if (discordOK && walletOK) {
       return {
         result: true,

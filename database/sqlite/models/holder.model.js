@@ -6,24 +6,24 @@ class Holder extends Model {}
 Holder.init(
   {
     id: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       primaryKey: true,
       allowNull: false,
     },
     discordId: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     discordName: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     lastbalance: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     timestamp: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     verified: {

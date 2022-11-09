@@ -29,5 +29,6 @@ module.exports = {
   remoteDatabase: {
     newHolder: "/holder/new",
     updateHolder: "/holder/update",
+    url: "http://157.245.152.83:3003/v1"
   },
 };

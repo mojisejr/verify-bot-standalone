@@ -1,5 +1,8 @@
+require("dotenv").config();
 const { ethers } = require("ethers");
 const { verification } = require("../constants/config");
+const remote = require("../apis/services/holder.service")
+
 
 const {
   getDataByDiscord,
@@ -26,8 +29,11 @@ const nft = new ethers.Contract(
 );
 
 //Check if holder have the right of verification
-async function checkVerifyHolder(inputData, client, interaction) {
+async function checkVerifyHolder(inputData, client, interaction, reverify =false) {
   const { wallet, discordId, discordName, timestamp } = inputData;
+
+  console.log("reverify !: ", reverify);
+
 
   const address = isValidAddress(wallet);
   if (address == null) {
@@ -38,20 +44,25 @@ async function checkVerifyHolder(inputData, client, interaction) {
   }
 
   // await interaction.reply("ขอตรวจกระเป๋าหน่อยนะ .. 🤖");
-  const verified = await isVerified(discordName);
+  const verified = await isVerified(wallet);
 
   const balance = await getHolderBalance(wallet);
 
   if (balance > 0 && !verified) {
     //set user as verified holder
-    const result = await saveVerifiedData({
-      wallet: address,
-      discordName,
-      discordId,
-      timestamp,
-      lastbalance: balance,
-      verified: true,
-    });
+    let result = false;
+    if(reverify == false) {
+      console.log("IN HERE");
+      result = await saveVerifiedData({
+        wallet: address,
+        discordName,
+        discordId,
+        timestamp,
+        lastbalance: balance,
+        verified: true,
+      });
+    } 
+
 
     if (result) {
       console.log(`@${wallet} verification done!`);
@@ -68,15 +79,15 @@ async function checkVerifyHolder(inputData, client, interaction) {
         `@${discordName} ${verification.messages.comeback}`
       );
       const balance = await getHolderBalance(wallet);
-      await updateVerificationStatus(wallet, balance, true);
+      // await updateVerificationStatus(wallet, balance, true)
       // .then(async () => {
-      //   console.log("done update local ... update to remote database");
-      //   await remoteUpdateVerifiedHolder({
-      //     walletAddress: wallet,
-      //     balance,
-      //     discordId,
-      //     verified: true,
-      //   });
+        console.log("done update local ... update to remote database");
+        const response = await remote.updateHolder(discordId, process.env.nft, {
+          walletAddress: wallet,
+          balance,
+          discordId,
+          verified: true,
+        });
       // });
       await giveRole(client, discordId);
     }
@@ -85,15 +96,16 @@ async function checkVerifyHolder(inputData, client, interaction) {
     await interaction.editReply(
       `@${discordName} ${verification.messages.already}`
     );
-    await updateVerificationStatus(wallet, balance, true);
+    // await updateVerificationStatus(wallet, balance, true)
     // .then(async () => {
-    //   console.log("done update local ... update to remote database");
-    //   await remoteUpdateVerifiedHolder({
-    //     walletAddress: wallet,
-    //     balance,
-    //     discordId,
-    //     verified: true,
-    //   });
+      console.log("done update local ... update to remote database");
+      const response = await remote.updateHolder(discordId, process.env.nft, {
+        walletAddress: wallet,
+        balance,
+        discordId,
+        verified: true,
+      });
+      console.log("update",response);
     // });
     await giveRole(client, discordId);
   } else {
@@ -119,7 +131,7 @@ async function reverifyHolder(inputData, client, interaction) {
   );
   const hasBalanceInNewWallet = await getHolderBalance(newWallet);
   if (result && hasBalanceInNewWallet > 0) {
-    await deleteHolderData(oldWallet);
+    // await deleteHolderData(oldWallet);
     await checkVerifyHolder(
       {
         wallet: newWallet,
@@ -128,7 +140,8 @@ async function reverifyHolder(inputData, client, interaction) {
         timestamp,
       },
       client,
-      interaction
+      interaction,
+      true
     );
   } else {
     await interaction.editReply({
@@ -169,8 +182,9 @@ async function getHolderBalance(address) {
 }
 
 //check if the sender is verified
-async function isVerified(discordName) {
-  const data = await getDataByDiscord(discordName);
+async function isVerified(wallet) {
+  // const data = await getDataByDiscord(discordName);
+  const data = await remote.getHolderByWallet(wallet, process.env.nft);
   console.log(
     "[isVerified]: ",
     data != null ? data.verified : "No data = false"

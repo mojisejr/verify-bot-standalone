@@ -5,6 +5,8 @@ const {
   getPunkByWallet,
 } = require("../database/verify.service");
 
+const remote = require("../apis/services/holder.service")
+
 async function getDataByWallet(wallet) {
   const result = await getPunkByWallet(wallet);
   return result;
@@ -28,12 +30,12 @@ async function saveVerifiedData({
   lastbalance,
   verified,
 }) {
-  const isVerified = await getDataByDiscord(discordName);
-  console.log("isVerified before save: ", isVerified);
-  if (isVerified) {
-    console.log("address already registered");
-    return false;
-  }
+  // const isVerified = await getDataByDiscord(discordName);
+  // console.log("isVerified before save: ", isVerified);
+  // if (isVerified) {
+  //   console.log("address already registered");
+  //   return false;
+  // }
 
   await addVerifiedPunk({
     wallet,
@@ -42,17 +44,17 @@ async function saveVerifiedData({
     lastbalance,
     timestamp,
     verified,
+  }).then(async () => {
+    console.log(`@${wallet} passed and saved to database also remote database`);
+    await remote.createNewHolder(
+      process.env.nft,
+      discordId,
+      wallet,
+      lastbalance,
+      new Date().getTime(),
+      true,
+    );
   });
-  // .then(async () => {
-  //   console.log(`@${wallet} passed and saved to database also remote database`);
-  //   await remoteAddVerifiedHolder({
-  //     nftAddress: process.env.nft,
-  //     discordId,
-  //     walletAddress: wallet,
-  //     balance,
-  //     verified: true,
-  //   });
-  // });
   return true;
 }
 

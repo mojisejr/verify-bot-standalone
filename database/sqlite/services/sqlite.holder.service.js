@@ -1,3 +1,4 @@
+const { default: axios } = require("axios");
 const Holder = require("../models/holder.model");
 
 async function newVerifiedHolder(holderData) {

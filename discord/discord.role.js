@@ -21,7 +21,6 @@ async function takeRole(client, userId) {
 }
 
 async function setZeroBalanceRole(client, userId) {
-  await takeRole(client, userId);
   const server = client.guilds.cache.get(process.env.guildId);
   const role = server.roles.cache.find(
     (role) => role.name === process.env.zero_balance_role
