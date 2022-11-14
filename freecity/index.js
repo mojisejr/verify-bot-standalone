@@ -1,3 +1,4 @@
+require("dotenv").config();
 const ethers = require("ethers");
 const chalk = require("chalk");
 const axios = require("axios");
@@ -10,6 +11,8 @@ const { createEmbedForSold } = require("../discord/embeds/sold.embed");
 
 const BKCMainnetUrl = process.env.bitkubMainnet;
 const BKCProvider = new ethers.providers.JsonRpcProvider(BKCMainnetUrl);
+
+console.log("freecity market: ", process.env.freecityMarketPlace);
 
 const freecityMarketPlace = new ethers.Contract(
   process.env.freecityMarketPlace,
@@ -64,6 +67,12 @@ freecityMarketPlace.on(
     //   console.log("KPUNK Listing detail: ", object);
     //   await sendListedToDiscord(object, bot);
     // }
+    const channel = bot.channels.cache.get(process.env.marketMonitorChannelId);
+    if (channel) {
+      channel.send({
+        content: `${id} listed by ${buyer} `,
+      });
+    }
   }
 );
 
@@ -99,6 +108,12 @@ freecityMarketPlace.on("Sold", async (buyer, id, orderBook, orderBookMeta) => {
   //     };
   //     await sendSoldToDiscord(object, bot);
   //   }
+  const channel = bot.channels.cache.get(process.env.marketMonitorChannelId);
+  if (channel) {
+    channel.send({
+      content: `${id} bought by ${buyer} `,
+    });
+  }
 });
 
 async function sendListedToDiscord(object, bot) {

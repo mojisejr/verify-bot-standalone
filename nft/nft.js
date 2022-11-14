@@ -6,7 +6,8 @@ const BKCProvider = new ethers.providers.JsonRpcProvider(BKCMainnetUrl);
 const {
   giveRole,
   takeRole,
-  setZeroBalanceRole,
+  setMiningRole,
+  takeMiningRole
 } = require("../discord/discord.role");
 const { getHolderBalance } = require("../discord/discord.verify");
 
@@ -21,6 +22,8 @@ const nft = new ethers.Contract(
   BKCProvider
 );
 
+const { bot } = require("../discord/discord.bot");
+
 const {
   getDataByWallet,
   updateVerificationStatus,
@@ -31,21 +34,27 @@ nft.on("Transfer", async (from, to, tokenId) => {
   console.log(
     chalk.bgGreenBright(`transfer from  = ${from} : ${to} tokenId: ${tokenId}`)
   );
-  onTransferToMarket(to,from);
-  onTransferToMine(to, from);
+
+  if(isMine(to) || isMine(from)) {
+    onTransferToMine(to, from);
+  } else {
+    onTransferToMarket(to,from);
+  }
 });
 
 
 async function onTransferUpdateRole(wallet) {
   const holderData = await getDataByWallet(wallet);
   const balance = await getHolderBalance(wallet);
-  if (balance > 0 && holderData && holderData.wallet == wallet) {
+
+  if (balance > 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has balance`);
-    await giveRole(client, holderData.discordId);
+    await giveRole(bot, holderData.discordId);
     await updateVerificationStatus(wallet, balance, true);
-  } else if (balance <= 0 && holderData && holderData.wallet == wallet) {
+  } else if (balance <= 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has no balance`);
-    await takeRole(client, holderData.discordId);
+    await takeRole(bot, holderData.discordId);
+    await takeMiningRole(bot, holderData.discordId);
     await updateVerificationStatus(wallet, balance, false);
   } else {
     console.log(`transfer from non-verified holder. @${wallet}`);
@@ -55,25 +64,25 @@ async function onTransferUpdateRole(wallet) {
 async function onTransferUpdateMiningRole(wallet) {
   const holderData = await getDataByWallet(wallet);
   const balance = await getHolderBalance(wallet);
-  if (balance > 0 && holderData && holderData.wallet == wallet) {
+
+
+  if (balance > 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has balance with some to mining`);
-    await giveRole(client, holderData.discordId);
-    await setZeroBalanceRole(client, holderData.discordId);
-    await updateVerificationStatus(wallet, balance, true);
-  } else if (balance <= 0 && holderData && holderData.wallet == wallet) {
+    await giveRole(bot, holderData.discordId);
+    await setMiningRole(bot, holderData.discordId);
+  } else if (balance <= 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has no balance with all to mining`);
-    await takeRole(client, holderData.discordId);
-    await setZeroBalanceRole(client, holderData.discordId);
-    await updateVerificationStatus(wallet, balance, false);
+    await takeRole(bot, holderData.discordId);
+    await setMiningRole(bot, holderData.discordId);
   } else {
     console.log(`transfer from non-verified holder. to mine @${wallet}`);
   }
 }
 
 async function onTransferToMine(to, from) {
-  if (toMine(to)) {
+  if (isMine(to)) {
     await onTransferUpdateMiningRole(from);
-  } else if (toMine(from)) {
+  } else if (isMine(from)) {
     await onTransferUpdateMiningRole(to);
   } else {
     await onTransferUpdateMiningRole(to);

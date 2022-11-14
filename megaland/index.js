@@ -1,3 +1,4 @@
+require("dotenv").config();
 const ethers = require("ethers");
 const chalk = require("chalk");
 const axios = require("axios");
@@ -10,6 +11,8 @@ const { createEmbedForSold } = require("../discord/embeds/sold.embed");
 
 const BKCMainnetUrl = process.env.bitkubMainnet;
 const BKCProvider = new ethers.providers.JsonRpcProvider(BKCMainnetUrl);
+
+console.log("megaland market: ", process.env.megalandMarketPlace);
 
 const megalandMarketPlace = new ethers.Contract(
   process.env.megalandMarketPlace,

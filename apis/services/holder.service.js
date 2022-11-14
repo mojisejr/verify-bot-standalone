@@ -28,9 +28,8 @@ const createNewHolder = async (
     balance,
     timestamp,
     verified,
-  }).catch(e => console.log("ERROR !!!! ", e));
+  }).catch(e => console.log("ERROR !!!! ", e.message));
 
-  console.log("response result", response.data);
 
   return response.data;
 };
@@ -61,12 +60,13 @@ const getHolder = async (discordId, nftAddress) => {
 
 const getHolderByWallet = async (wallet, nftAddress) => {
   const response = await axios
-    .get(`${remote_database}/${baseRoute}/wallet/${wallet}/${process.env.nft}`)
+    .get(`${remote_database}/${baseRoute}/wallet/${process.env.nft}/${wallet}`)
     .catch((e) => console.log("getHolderByWallet: ", e.message));
 
 
   return response == undefined ? null : response.data.data;
 };
+
 
 const updateHolder = async (discordId, nftAddress, data) => {
   const response = await axios.put(
