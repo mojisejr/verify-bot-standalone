@@ -6,8 +6,7 @@ const BKCProvider = new ethers.providers.JsonRpcProvider(BKCMainnetUrl);
 const {
   giveRole,
   takeRole,
-  setMiningRole,
-  takeMiningRole
+  takeMiningRole,
 } = require("../discord/discord.role");
 const { getHolderBalance } = require("../discord/discord.verify");
 
@@ -35,13 +34,8 @@ nft.on("Transfer", async (from, to, tokenId) => {
     chalk.bgGreenBright(`transfer from  = ${from} : ${to} tokenId: ${tokenId}`)
   );
 
-  if(isMine(to) || isMine(from)) {
-    onTransferToMine(to, from);
-  } else {
-    onTransferToMarket(to,from);
-  }
+  onTransferToMarket(to, from);
 });
-
 
 async function onTransferUpdateRole(wallet) {
   const holderData = await getDataByWallet(wallet);
@@ -51,42 +45,17 @@ async function onTransferUpdateRole(wallet) {
     console.log(`@${wallet} : is has balance`);
     await giveRole(bot, holderData.discordId);
     await updateVerificationStatus(wallet, balance, true);
-  } else if (balance <= 0 && holderData != null && holderData.walletAddress == wallet) {
+  } else if (
+    balance <= 0 &&
+    holderData != null &&
+    holderData.walletAddress == wallet
+  ) {
     console.log(`@${wallet} : is has no balance`);
     await takeRole(bot, holderData.discordId);
     await takeMiningRole(bot, holderData.discordId);
     await updateVerificationStatus(wallet, balance, false);
   } else {
     console.log(`transfer from non-verified holder. @${wallet}`);
-  }
-}
-
-async function onTransferUpdateMiningRole(wallet) {
-  const holderData = await getDataByWallet(wallet);
-  const balance = await getHolderBalance(wallet);
-
-
-  if (balance > 0 && holderData != null && holderData.walletAddress == wallet) {
-    console.log(`@${wallet} : is has balance with some to mining`);
-    await giveRole(bot, holderData.discordId);
-    await setMiningRole(bot, holderData.discordId);
-  } else if (balance <= 0 && holderData != null && holderData.walletAddress == wallet) {
-    console.log(`@${wallet} : is has no balance with all to mining`);
-    await takeRole(bot, holderData.discordId);
-    await setMiningRole(bot, holderData.discordId);
-  } else {
-    console.log(`transfer from non-verified holder. to mine @${wallet}`);
-  }
-}
-
-async function onTransferToMine(to, from) {
-  if (isMine(to)) {
-    await onTransferUpdateMiningRole(from);
-  } else if (isMine(from)) {
-    await onTransferUpdateMiningRole(to);
-  } else {
-    await onTransferUpdateMiningRole(to);
-    await onTransferUpdateMiningRole(from);
   }
 }
 
@@ -112,21 +81,7 @@ function isMarketPlace(to) {
 
   const foundMarket = marketPlaceAddress.find((market) => market == to);
 
-  if (to === foundMarket || to === middleAddress) { 
-    return true;
-  } else {
-    return false;
-  }
-}
-
-function isMine(to) {
-  let mines = [
-    "0xD995B2cC01183268Ba124830E49963f3656f8e02"
-  ];
-
-  const foundMarket =mines.find((mine) => mine == to);
-
-  if (to === foundMarket) {
+  if (to === foundMarket || to === middleAddress) {
     return true;
   } else {
     return false;
