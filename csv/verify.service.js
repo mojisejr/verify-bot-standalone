@@ -1,3 +1,4 @@
+require("dotenv").config();
 const {
   addVerifiedPunk,
   updatePunkVerificationState,
@@ -5,7 +6,7 @@ const {
   getPunkByWallet,
 } = require("../database/verify.service");
 
-const remote = require("../apis/services/holder.service")
+const remote = require("../apis/services/holder.service");
 
 async function getDataByWallet(wallet) {
   const result = await getPunkByWallet(wallet);
@@ -17,8 +18,15 @@ async function getDataByDiscord(discord) {
   return result;
 }
 
-async function updateVerificationStatus(wallet, balance, status) {
-  updatePunkVerificationState(wallet, balance, status);
+async function updateVerificationStatus(discordId, wallet, balance, status) {
+  // updatePunkVerificationState(wallet, balance, status);
+  remote.updateHolder(discordId, process.env.nft, {
+    nftAddress: process.env.nft,
+    discordId,
+    walletAddress: wallet,
+    balance,
+    status,
+  });
   console.log(`@${wallet} verification status updated to ${status}`);
 }
 
@@ -52,7 +60,7 @@ async function saveVerifiedData({
       wallet,
       lastbalance,
       new Date().getTime(),
-      true,
+      true
     );
   });
   return true;

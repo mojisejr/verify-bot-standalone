@@ -8,6 +8,7 @@ const {
   takeRole,
   takeMiningRole,
 } = require("../discord/discord.role");
+
 const { getHolderBalance } = require("../discord/discord.verify");
 
 const nft = new ethers.Contract(
@@ -44,7 +45,12 @@ async function onTransferUpdateRole(wallet) {
   if (balance > 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has balance`);
     await giveRole(bot, holderData.discordId);
-    await updateVerificationStatus(wallet, balance, true);
+    await updateVerificationStatus(
+      holderData.discordId,
+      wallet,
+      balance,
+      false
+    );
   } else if (
     balance <= 0 &&
     holderData != null &&
@@ -53,7 +59,12 @@ async function onTransferUpdateRole(wallet) {
     console.log(`@${wallet} : is has no balance`);
     await takeRole(bot, holderData.discordId);
     await takeMiningRole(bot, holderData.discordId);
-    await updateVerificationStatus(wallet, balance, false);
+    await updateVerificationStatus(
+      holderData.discordId,
+      wallet,
+      balance,
+      false
+    );
   } else {
     console.log(`transfer from non-verified holder. @${wallet}`);
   }
