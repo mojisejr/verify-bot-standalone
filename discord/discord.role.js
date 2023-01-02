@@ -28,9 +28,7 @@ async function setMiningRole(client, userId) {
   const member = await server.members.fetch();
   const user = member.get(userId);
   await user.roles.add(role);
-  console.log(
-    `@${userId} has 0 balance may be sent to dig or sent to market set to ${role.name}`
-  );
+  console.log(`@${userId} to mine set role [${role.name}]`);
 }
 
 async function takeMiningRole(client, userId) {
@@ -41,9 +39,7 @@ async function takeMiningRole(client, userId) {
   const member = await server.members.fetch();
   const user = member.get(userId);
   await user.roles.remove(role);
-  console.log(
-    `@${userId} has 0 balance may be sent to dig or sent to market set to ${role.name}`
-  );
+  console.log(`@${userId} out mine remove role [${role.name}]`);
 }
 
 module.exports = {

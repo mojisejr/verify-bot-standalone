@@ -17,12 +17,7 @@ const PORT = process.env.PORT || 4200;
 
 const whitelist =
   process.env.production == "PROD"
-    ? [
-        "http://68.183.176.4:3001",
-        "http://68.183.176.4:3002",
-        "http://68.183.176.4:3000",
-        "https://vast-blue-pig-tutu.cyclic.app",
-      ]
+    ? ["http://188.166.65.114:3000", "http://188.166.65.114:3003"]
     : [
         "http://localhost:3000",
         "http://localhost:3001",
@@ -56,7 +51,7 @@ app.use(
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/v1", router);
 app.all("*", (req, res, next) => {
-  next(new appError(`[${req.originalUrl}] Not Found`, 404, 'global'));
+  next(new appError(`[${req.originalUrl}] Not Found`, 404, "global"));
 });
 
 app.use(globleErrorController);

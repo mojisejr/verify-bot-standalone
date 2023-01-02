@@ -10,6 +10,7 @@ const {
 } = require("../discord/discord.role");
 
 const { getHolderBalance } = require("../discord/discord.verify");
+const mine = require("../freecity/contracts/mining.contract");
 
 const nft = new ethers.Contract(
   process.env.nft,
@@ -45,12 +46,7 @@ async function onTransferUpdateRole(wallet) {
   if (balance > 0 && holderData != null && holderData.walletAddress == wallet) {
     console.log(`@${wallet} : is has balance`);
     await giveRole(bot, holderData.discordId);
-    await updateVerificationStatus(
-      holderData.discordId,
-      wallet,
-      balance,
-      false
-    );
+    await updateVerificationStatus(holderData.discordId, wallet, balance, true);
   } else if (
     balance <= 0 &&
     holderData != null &&
@@ -58,7 +54,15 @@ async function onTransferUpdateRole(wallet) {
   ) {
     console.log(`@${wallet} : is has no balance`);
     await takeRole(bot, holderData.discordId);
-    await takeMiningRole(bot, holderData.discordId);
+    //check is to mine
+    const stakedBalance = await mine.userInfos(holderData.walletAddress);
+    if (stakedBalance <= 0 && holderData != undefined) {
+      await takeMiningRole(bot, holderData.discordId);
+      console.log(
+        `${holderData.walletAddress} no longer the holder remove all role`
+      );
+    }
+
     await updateVerificationStatus(
       holderData.discordId,
       wallet,
@@ -86,6 +90,7 @@ function isMarketPlace(to) {
   let marketPlaceAddress = [
     process.env.megalandMarketPlace,
     process.env.freecityMarketPlace,
+    "0xD995B2cC01183268Ba124830E49963f3656f8e02",
   ];
 
   let middleAddress = "0xA51b0F76f0d7d558DFc0951CFD74BB85a70E2a95";

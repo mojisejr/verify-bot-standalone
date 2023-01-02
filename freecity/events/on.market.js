@@ -4,6 +4,7 @@ const { sendListedToDiscord } = require("../../discord/embeds/list.embed");
 const { sendSoldToDiscord } = require("../../discord/embeds/sold.embed");
 const { bot } = require("../../discord/discord.bot");
 
+console.log("freecity market: ", process.env.freecityMarketPlace);
 console.log("Freecity market tracker started !");
 
 freecityMarketPlace.on(

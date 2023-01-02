@@ -25,7 +25,7 @@ async function updateVerificationStatus(discordId, wallet, balance, status) {
     discordId,
     walletAddress: wallet,
     balance,
-    status,
+    verified: status,
   });
   console.log(`@${wallet} verification status updated to ${status}`);
 }

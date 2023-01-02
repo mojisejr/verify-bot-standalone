@@ -21,15 +21,16 @@ const createNewHolder = async (
   timestamp,
   verified
 ) => {
-  const response = await axios.post(`${remote_database}/${baseRoute}/new`, {
-    nftAddress,
-    discordId,
-    walletAddress,
-    balance,
-    timestamp,
-    verified,
-  }).catch(e => console.log("ERROR !!!! ", e.message));
-
+  const response = await axios
+    .post(`${remote_database}/${baseRoute}/new`, {
+      nftAddress,
+      discordId,
+      walletAddress,
+      balance,
+      timestamp,
+      verified,
+    })
+    .catch((e) => console.log("create new holder: ", e));
 
   return response.data;
 };
@@ -40,20 +41,17 @@ const getAllHolders = async () => {
   return response.data;
 };
 
-
-
-
 const getAllHoldersByNft = async (nftAddress) => {
-  const response = await axios.get(
-    `${remote_database}/${baseRoute}/${nftAddress}`
-  );
+  const response = await axios
+    .get(`${remote_database}/${baseRoute}/${nftAddress}`)
+    .catch((e) => console.log("[getAllHoldersByNft]: ", e));
   return response.data;
 };
 
 const getHolder = async (discordId, nftAddress) => {
-  const response = await axios.get(
-    `${remote_database}/${baseRoute}/${nftAddress}/${discordId}`
-  );
+  const response = await axios
+    .get(`${remote_database}/${baseRoute}/${nftAddress}/${discordId}`)
+    .catch((e) => console.log("[getHolder]: ", e));
 
   return response.data;
 };
@@ -61,18 +59,19 @@ const getHolder = async (discordId, nftAddress) => {
 const getHolderByWallet = async (wallet, nftAddress) => {
   const response = await axios
     .get(`${remote_database}/${baseRoute}/wallet/${process.env.nft}/${wallet}`)
-    .catch((e) => console.log("getHolderByWallet: ", e.message));
-
+    .catch((e) => console.log("[getHolderByWallet]: ", e));
 
   return response == undefined ? null : response.data.data;
 };
 
-
 const updateHolder = async (discordId, nftAddress, data) => {
-  const response = await axios.put(
-    `${remote_database}/${baseRoute}/${nftAddress}/${discordId}`,
-    { discordId, nftAddress, data }
-  );
+  const response = await axios
+    .put(`${remote_database}/${baseRoute}/${nftAddress}/${discordId}`, {
+      discordId,
+      nftAddress,
+      data,
+    })
+    .catch((e) => console.log("[updateHolder]: ", e));
 
   return response.data;
 };
