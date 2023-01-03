@@ -10,7 +10,7 @@ const {
 } = require("../discord/discord.role");
 
 const { getHolderBalance } = require("../discord/discord.verify");
-const mine = require("../freecity/contracts/mining.contract");
+const { mines } = require("../freecity/contracts/mining.contract");
 
 const nft = new ethers.Contract(
   process.env.nft,
@@ -39,7 +39,7 @@ nft.on("Transfer", async (from, to, tokenId) => {
   onTransferToMarket(to, from);
 });
 
-async function onTransferUpdateRole(wallet) {
+async function onTransferUpdateRole(wallet, mineAddr) {
   const holderData = await getDataByWallet(wallet);
   const balance = await getHolderBalance(wallet);
 
@@ -55,6 +55,7 @@ async function onTransferUpdateRole(wallet) {
     console.log(`@${wallet} : is has no balance`);
     await takeRole(bot, holderData.discordId);
     //check is to mine
+    const mine = mines.find((m) => m == mineAddr);
     const stakedBalance = await mine.userInfos(holderData.walletAddress);
     if (stakedBalance <= 0 && holderData != undefined) {
       await takeMiningRole(bot, holderData.discordId);
@@ -76,8 +77,10 @@ async function onTransferUpdateRole(wallet) {
 
 async function onTransferToMarket(to, from) {
   if (isMarketPlace(to)) {
-    await onTransferUpdateRole(from);
+    //market is to::
+    await onTransferUpdateRole(from, to);
   } else if (isMarketPlace(from)) {
+    //market is from ::
     await onTransferUpdateRole(to);
   } else {
     await onTransferUpdateRole(to);
