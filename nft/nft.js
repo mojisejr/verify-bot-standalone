@@ -56,12 +56,16 @@ async function onTransferUpdateRole(wallet, mineAddr) {
     await takeRole(bot, holderData.discordId);
     //check is to mine
     const mine = mines.find((m) => m == mineAddr);
-    const stakedBalance = await mine.userInfos(holderData.walletAddress);
-    if (stakedBalance <= 0 && holderData != undefined) {
-      await takeMiningRole(bot, holderData.discordId);
-      console.log(
-        `${holderData.walletAddress} no longer the holder remove all role`
-      );
+    if (mine) {
+      const stakedBalance = await mine.userInfos(holderData.walletAddress);
+      if (stakedBalance <= 0 && holderData != undefined) {
+        await takeMiningRole(bot, holderData.discordId);
+        console.log(
+          `${holderData.walletAddress} no longer the holder remove all role`
+        );
+      }
+    } else {
+      console.log(`maybe this is ${mineAddr} is not mine contract`);
     }
 
     await updateVerificationStatus(
@@ -94,6 +98,7 @@ function isMarketPlace(to) {
     process.env.megalandMarketPlace,
     process.env.freecityMarketPlace,
     "0xD995B2cC01183268Ba124830E49963f3656f8e02",
+    "0x4c20E44387282A58Ef1DE05d821904b8Fb1F666d",
   ];
 
   let middleAddress = "0xA51b0F76f0d7d558DFc0951CFD74BB85a70E2a95";
