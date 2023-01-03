@@ -81,7 +81,7 @@ async function onTransferToMarket(to, from) {
     await onTransferUpdateRole(from, to);
   } else if (isMarketPlace(from)) {
     //market is from ::
-    await onTransferUpdateRole(to);
+    await onTransferUpdateRole(to, from);
   } else {
     await onTransferUpdateRole(to);
     await onTransferUpdateRole(from);
